@@ -22,11 +22,11 @@
 
 import p5 from 'p5';
 
+import { Genuary1 } from './genuary/genuary-1';
+
+import { GenuarySketch } from './genuary-sketch';
+
 import '../assets/style/sketch.css';
-
-// import { Genuary1 } from "./genuary/genuary-1";
-
-// import {GenuarySketch} from "./genuary-sketch";
 
 function sketch(ctx: p5): void {
     const ROWS: number = 3;
@@ -37,7 +37,7 @@ function sketch(ctx: p5): void {
     const RESOLUTION_UNIT: number = RESOLUTION / WIDTH_RATIO;
     const CELL_WIDTH: number = WIDTH_RATIO * RESOLUTION_UNIT;
     const CELL_HEIGHT: number = HEIGHT_RATIO * RESOLUTION_UNIT;
-    // const genuarySketches: GenuarySketch[][] = [];
+    const GENUARY_GRID: GenuarySketch[][] = [];
 
     let canvas : p5.Renderer | null = null;
 
@@ -45,14 +45,14 @@ function sketch(ctx: p5): void {
         canvas = ctx.createCanvas(CELL_WIDTH * COLS, CELL_HEIGHT * ROWS);
         updateCanvasStyle();
 
-        // for (let row = 0; row < rows; row++) {
-        //     genuarySketches.push([]);
-        //
-        //     for (let col = 0; col < cols; col++) {
-        //         const graphics = ctx.createGraphics(cellWidth, cellHeight);
-        //         genuarySketches[row].push(new Genuary1(ctx, graphics));
-        //     }
-        // }
+        for (let row = 0; row < ROWS; row++) {
+            GENUARY_GRID.push([]);
+
+            for (let col = 0; col < COLS; col++) {
+                const graphics = ctx.createGraphics(CELL_WIDTH, CELL_HEIGHT);
+                GENUARY_GRID[row].push(new Genuary1(ctx, graphics));
+            }
+        }
     };
 
     ctx.draw = (): void => {
@@ -60,10 +60,27 @@ function sketch(ctx: p5): void {
         ctx.fill(255, 0, 0);
         ctx.rect(0, 0, 100, 100);
         ctx.ellipse(ctx.width / 2, ctx.height / 2, 200, 200);
+
+        for (let row = 0; row < ROWS; row++) {
+            for (let col = 0; col < COLS; col++) {
+                const x = col * CELL_WIDTH;
+                const y = row * CELL_HEIGHT;
+                GENUARY_GRID[row][col].draw();
+                const graphics = GENUARY_GRID[row][col].graphics;
+                ctx.image(graphics, x, y);
+            }
+        }
     };
 
     ctx.windowResized = (): void => {
         updateCanvasStyle();
+    }
+
+    ctx.keyPressed = (): void => {
+        if (ctx.key === 's') {
+            saveCanvas();
+            saveImages();
+        }
     }
 
     function updateCanvasStyle() {
@@ -77,6 +94,36 @@ function sketch(ctx: p5): void {
                 canvas.attribute('style', 'width: 100vw;');
             }
         }
+    }
+
+    function saveImages() {
+        for (let row = 0; row < ROWS; row++) {
+            for (let col = 0; col < COLS; col++) {
+                const graphics = GENUARY_GRID[row][col].graphics;
+                saveGraphics(graphics, row, col);
+            }
+        }
+    }
+
+    function saveCanvas() {
+        const filename: string = `${buildTimestamp()}_genuary_canvas`;
+        ctx.saveCanvas(filename, 'png');
+    }
+
+    function saveGraphics(graphics: p5.Graphics, row: number, col: number) {
+        const filename: string = `${buildTimestamp()}_genuary_r${row}_c${col}.png`;
+        ctx.save(graphics, filename);
+    }
+
+    function buildTimestamp(): string {
+        const now: Date = new Date();
+        const year: number = now.getFullYear();
+        const month: string = String(now.getMonth() + 1).padStart(2, '0');
+        const day: string = String(now.getDate()).padStart(2, '0');
+        const hours: string = String(now.getHours()).padStart(2, '0');
+        const minutes: string = String(now.getMinutes()).padStart(2, '0');
+        const seconds: string = String(now.getSeconds()).padStart(2, '0');
+        return `${year}-${month}-${day}-${hours}-${minutes}-${seconds}`;
     }
 }
 
