@@ -23,4 +23,4 @@ The full text of the license is included with this source code.
 
 ----
 
-Copyright &copy; 2025-2026 brittni watkins.
+Copyright &copy; 2025 brittni watkins.
