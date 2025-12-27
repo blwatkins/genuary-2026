@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024-2025 brittni watkins.
+ * Copyright (C) 2025 brittni watkins.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -20,20 +20,3 @@
  * SOFTWARE.
  */
 
-import p5 from 'p5';
-
-import '../assets/style/sketch.css';
-
-function sketch(ctx: p5): void {
-    ctx.setup = (): void => {
-        ctx.createCanvas(720, 720);
-    };
-
-    ctx.draw = (): void => {
-        ctx.background(0);
-        ctx.fill(255);
-        ctx.ellipse(ctx.mouseX, ctx.mouseY, 100, 100);
-    };
-}
-
-new p5(sketch);
