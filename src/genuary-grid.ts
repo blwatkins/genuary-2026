@@ -20,22 +20,6 @@
  * SOFTWARE.
  */
 
-import p5 from 'p5';
+export class GenuaryGrid {
 
-export abstract class GenuarySketch {
-    #graphicsContext: p5.Graphics;
-
-    protected constructor(context: p5.Graphics) {
-        this.#graphicsContext = context;
-    }
-
-    public abstract drawToGraphics(ctx: p5.Graphics): void;
-
-    public get graphics(): p5.Graphics {
-        return this.#graphicsContext;
-    }
-
-    public draw() {
-        this.drawToGraphics(this.#graphicsContext);
-    }
 }

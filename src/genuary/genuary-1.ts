@@ -20,22 +20,23 @@
  * SOFTWARE.
  */
 
-import p5 from 'p5';
+import p5 from "p5";
 
-export abstract class GenuarySketch {
-    #graphicsContext: p5.Graphics;
+import { GenuarySketch } from "../genuary-sketch";
 
-    protected constructor(context: p5.Graphics) {
-        this.#graphicsContext = context;
+export class Genuary1 extends GenuarySketch {
+    readonly #backgroundColor: p5.Color;
+    // readonly #p5Ctx: p5;
+
+    public constructor(p5Ctx: p5, graphics: p5.Graphics) {
+        super(graphics);
+        const red = Math.floor(p5Ctx.random(255));
+        const green = Math.floor(p5Ctx.random(255));
+        const blue = Math.floor(p5Ctx.random(255));
+        this.#backgroundColor = p5Ctx.color(red, green, blue);
     }
 
-    public abstract drawToGraphics(ctx: p5.Graphics): void;
-
-    public get graphics(): p5.Graphics {
-        return this.#graphicsContext;
-    }
-
-    public draw() {
-        this.drawToGraphics(this.#graphicsContext);
+    public override drawToGraphics(ctx: p5.Graphics): void {
+        ctx.background(this.#backgroundColor);
     }
 }
