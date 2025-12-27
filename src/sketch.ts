@@ -22,7 +22,7 @@
 
 import p5 from 'p5';
 
-import { Genuary1 } from './genuary/genuary-1';
+import { GenuaryTest } from './genuary/genuary-test';
 
 import { GenuarySketch } from './genuary-sketch';
 
@@ -50,7 +50,7 @@ function sketch(ctx: p5): void {
 
             for (let col = 0; col < COLS; col++) {
                 const graphics = ctx.createGraphics(CELL_WIDTH, CELL_HEIGHT);
-                GENUARY_GRID[row].push(new Genuary1(ctx, graphics));
+                GENUARY_GRID[row].push(new GenuaryTest(ctx, graphics));
             }
         }
     };

@@ -20,13 +20,16 @@
  * SOFTWARE.
  */
 
-import p5 from "p5";
+import p5 from 'p5';
 
-import { GenuarySketch } from "../genuary-sketch";
+import { GenuarySketch } from '../genuary-sketch';
 
-export class Genuary1 extends GenuarySketch {
+export class GenuaryTest extends GenuarySketch {
     readonly #backgroundColor: p5.Color;
-    // readonly #p5Ctx: p5;
+    readonly xs: number[] = [];
+    readonly ys: number[] = [];
+    readonly diameters: number[] = [];
+    readonly colors: p5.Color[] = [];
 
     public constructor(p5Ctx: p5, graphics: p5.Graphics) {
         super(graphics);
@@ -34,9 +37,26 @@ export class Genuary1 extends GenuarySketch {
         const green = Math.floor(p5Ctx.random(255));
         const blue = Math.floor(p5Ctx.random(255));
         this.#backgroundColor = p5Ctx.color(red, green, blue);
+
+        for (let i = 0; i < 50; i++) {
+            this.xs.push(p5Ctx.random(this.graphics.width));
+            this.ys.push(p5Ctx.random(this.graphics.height));
+            this.diameters.push(p5Ctx.random(10, 250));
+            const r = Math.floor(p5Ctx.random(255));
+            const g = Math.floor(p5Ctx.random(255));
+            const b = Math.floor(p5Ctx.random(255));
+            const a = Math.floor(p5Ctx.random(100, 200));
+            this.colors.push(p5Ctx.color(r, g, b, a));
+        }
     }
 
     public override drawToGraphics(ctx: p5.Graphics): void {
         ctx.background(this.#backgroundColor);
+
+        for (let i = 0; i < this.xs.length; i++) {
+            ctx.fill(this.colors[i]);
+            ctx.noStroke();
+            ctx.ellipse(this.xs[i], this.ys[i], this.diameters[i], this.diameters[i]);
+        }
     }
 }
