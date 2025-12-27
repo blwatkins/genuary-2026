@@ -1,0 +1,59 @@
+{
+  "name": "p5-typescript-template",
+  "version": "3.0.0",
+  "description": "A template project for using p5.js with TypeScript and Webpack.",
+  "private": true,
+  "scripts": {
+    "build:dev": "webpack --mode development",
+    "build:dev:single-file": "webpack --mode development --config webpack.single-file.config.cjs",
+    "build:prod": "webpack --mode production",
+    "build:prod:single-file": "webpack --mode production --config webpack.single-file.config.cjs",
+    "dev": "webpack-dev-server --mode development",
+    "dev:single-file": "webpack-dev-server --mode development --config webpack.single-file.config.cjs",
+    "dev:prod": "webpack-dev-server --mode production",
+    "dev:prod:single-file": "webpack-dev-server --mode production --config webpack.single-file.config.cjs",
+    "lint:js": "eslint -c eslint.config.js.mjs ./eslint.config.js.mjs ./eslint.config.ts.mjs ./webpack.config.cjs ./webpack.single-file.config.cjs",
+    "lint:ts": "eslint -c eslint.config.ts.mjs ./src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blwatkins/p5-typescript-template.git"
+  },
+  "keywords": [
+    "algorithmic art",
+    "code art",
+    "generative art",
+    "p5",
+    "p5.js",
+    "p5js",
+    "p5-js",
+    "typescript",
+    "template"
+  ],
+  "author": {
+    "name": "brittni watkins",
+    "url": "https://blwatkins.github.io/"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "p5": "^2.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@stylistic/eslint-plugin": "^5.6.1",
+    "css-loader": "^7.1.2",
+    "eslint": "^9.39.1",
+    "eslint-plugin-es-x": "^9.3.0",
+    "eslint-plugin-n": "^17.23.1",
+    "eslint-plugin-security": "^3.0.1",
+    "html-webpack-plugin": "^5.6.5",
+    "mini-css-extract-plugin": "^2.9.4",
+    "ts-loader": "^9.5.4",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.49.0",
+    "webpack": "^5.103.0",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
+  }
+}
