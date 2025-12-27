@@ -207,6 +207,22 @@ export default tsEslint.config(
             '@typescript-eslint/restrict-template-expressions': ['error', {
                 allowNumber: true,
                 allowBoolean: true
+            }],
+
+            /* eslint-plugin-n */
+
+            'n/no-extraneous-import': 'error',
+
+            'n/no-missing-import': 'off',
+
+            'n/no-unsupported-features/es-syntax': ['error', {
+                version: '>=20.0.0',
+                ignores: []
+            }],
+
+            'n/no-unsupported-features/node-builtins': ['error', {
+                version: '>=20.0.0',
+                ignores: []
             }]
         }
     }

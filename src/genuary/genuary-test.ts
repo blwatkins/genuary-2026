@@ -54,9 +54,9 @@ export class GenuaryTest extends GenuarySketch {
         ctx.background(this.#backgroundColor);
 
         for (let i = 0; i < this.xs.length; i++) {
-            ctx.fill(this.colors[i]);
+            ctx.fill(this.colors.at(i) ?? ctx.color(0));
             ctx.noStroke();
-            ctx.ellipse(this.xs[i], this.ys[i], this.diameters[i], this.diameters[i]);
+            ctx.ellipse(this.xs.at(i) ?? 0, this.ys.at(i) ?? 0, this.diameters.at(i) ?? 10, this.diameters.at(i) ?? 10);
         }
     }
 }
