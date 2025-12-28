@@ -22,7 +22,8 @@
 
 import p5 from 'p5';
 
-import { GenuaryTest } from './genuary/genuary-test';
+// import { GenuaryTest } from './genuary/genuary-test';
+import { Genuary01 } from './genuary/genuary-01';
 
 import { GenuarySketch } from './genuary-sketch';
 
@@ -96,7 +97,7 @@ function sketch(ctx: p5): void {
 
             for (let col: number = 0; col < COLS; col++) {
                 const graphics: p5.Graphics = ctx.createGraphics(CELL_WIDTH, CELL_HEIGHT);
-                GENUARY_GRID.at(row)?.push(new GenuaryTest(ctx, graphics));
+                GENUARY_GRID.at(row)?.push(new Genuary01(ctx, graphics));
             }
         }
     };
