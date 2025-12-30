@@ -21,167 +21,7 @@
  */
 
 import { GenuarySketch } from '../genuary-sketch';
-import p5 from "p5";
-
-export class Genuary01 extends GenuarySketch {
-    #shapes: Shape[] = [];
-    #backgroundColor: p5.Color;
-
-    public constructor(p5Ctx: p5, graphics: p5.Graphics) {
-        super(graphics);
-
-        const numShapes = p5Ctx.random(1, 1_000);
-        const shapeType: ShapeType = selectRandomElement<ShapeType>(Object.values(ShapeType), p5Ctx);
-        const styleType: StyleType = selectRandomElement<StyleType>(Object.values(StyleType), p5Ctx);
-        const backgroundType: 'light' | 'dark' = selectRandomElement<'light' | 'dark'>(['light', 'dark'], p5Ctx);
-
-        const shapeWidth = p5Ctx.random(5, 500);
-        const shapeHeight = p5Ctx.random(5, 500);
-
-        const colorSelector = new ColorSelector(p5Ctx, backgroundType);
-        this.#backgroundColor = colorSelector.buildBackgroundColor(p5Ctx);
-
-        for (let i = 0; i < numShapes; i++) {
-            if (shapeType === ShapeType.RECTANGLE) {
-                const config = buildShapeConfig(p5Ctx, shapeWidth, shapeHeight, styleType, colorSelector);
-                this.#shapes.push(new Rectangle(config));
-            } else if (shapeType === ShapeType.ELLIPSE) {
-                const config = buildShapeConfig(p5Ctx, shapeWidth, shapeHeight, styleType, colorSelector);
-                this.#shapes.push(new Ellipse(config));
-            }
-        }
-    }
-
-    public override drawToGraphics(ctx: p5.Graphics): void {
-        ctx.background(this.#backgroundColor);
-        for (const shape of this.#shapes) {
-            shape.draw(ctx);
-        }
-    }
-}
-
-function buildShapeConfig(p5Ctx: p5, width: number, height: number, styleType: StyleType, colorSelector: ColorSelector): ShapeConfig {
-    const position = p5Ctx.createVector(
-        p5Ctx.random(p5Ctx.width),
-        p5Ctx.random(p5Ctx.height)
-    );
-
-    const rotation = p5Ctx.random(p5Ctx.TWO_PI);
-
-    // let fillColor: p5.Color | null = p5Ctx.color(
-    //     Math.floor(p5Ctx.random(255)),
-    //     Math.floor(p5Ctx.random(255)),
-    //     Math.floor(p5Ctx.random(255)),
-    //     Math.floor(p5Ctx.random(50, 200))
-    // );
-
-    let fillColor: p5.Color | null = colorSelector.buildShapeColor(p5Ctx);
-
-    // let strokeColor: p5.Color | null = p5Ctx.color(
-    //     Math.floor(p5Ctx.random(255)),
-    //     Math.floor(p5Ctx.random(255)),
-    //     Math.floor(p5Ctx.random(255)),
-    //     Math.floor(p5Ctx.random(50, 200))
-    // );
-
-    let strokeColor: p5.Color | null = colorSelector.buildShapeColor(p5Ctx);
-
-    const strokeWeight = p5Ctx.random(0.5, 20);
-
-    if (styleType === StyleType.FILL_ONLY) {
-        strokeColor = null;
-    } else if (styleType === StyleType.STROKE_ONLY) {
-        fillColor = null;
-    } else if (styleType === StyleType.FILL_AND_BOTH) {
-        if (randomBoolean()) {
-            strokeColor = null;
-        }
-    } else if (styleType === StyleType.STROKE_AND_BOTH) {
-        if (randomBoolean()) {
-            fillColor = null;
-        }
-    } else if (styleType === StyleType.FILL_AND_STROKE) {
-        if (randomBoolean()) {
-            fillColor = null;
-        } else {
-            strokeColor = null;
-        }
-    } else if (styleType === StyleType.MIXED) {
-        const rand = p5Ctx.random(1);
-        if (rand < 0.33) {
-            fillColor = null;
-        } else if (rand < 0.66) {
-            strokeColor = null;
-        }
-    }
-
-    return {
-        position,
-        width,
-        height,
-        rotation,
-        fillColor,
-        strokeColor,
-        strokeWeight
-    };
-}
-
-function randomBoolean(): boolean {
-    return Math.random() < 0.5;
-}
-
-function selectRandomElement<T>(arr: T[], p5Ctx: p5): T {
-    const index = Math.floor(p5Ctx.random(arr.length));
-    return arr[index];
-}
-
-enum ShapeType {
-    RECTANGLE = 'RECTANGLE',
-    ELLIPSE = 'ELLIPSE',
-}
-
-enum StyleType {
-    /**
-     * All shapes will be filled only.
-     */
-    FILL_ONLY= 'FILL_ONLY',
-
-    /**
-     * All shapes will be stroked only.
-     */
-    STROKE_ONLY = 'STROKE_ONLY',
-
-    /**
-     * All shapes will be filled and stroked.
-     */
-    BOTH = 'BOTH',
-
-    /**
-     * All shapes will be filled only or have both fill and stroke.
-     */
-    FILL_AND_BOTH = 'FILL_AND_BOTH',
-
-    /**
-     * All shapes will be stroked only or have both fill and stroke.
-     */
-    STROKE_AND_BOTH = 'STROKE_AND_BOTH',
-
-    /**
-     * All shapes will be filled only or stroked only.
-     */
-    FILL_AND_STROKE = 'FILL_AND_STROKE',
-
-    /**
-     * Shapes can be filled only, stroked only, or have both fill and stroke.
-     */
-    MIXED = 'MIXED'
-}
-
-// const enum RotationType {
-//     CONSTANT = 'CONSTANT',
-//     RANDOM = 'RANDOM',
-//     ALIGNED = 'ALIGNED'
-// }
+import p5 from 'p5';
 
 interface ShapeConfig {
     position: p5.Vector;
@@ -199,7 +39,7 @@ abstract class Shape {
     readonly #height: number;
     readonly #rotation: number;
     readonly #fillColor: p5.Color | null;
-    readonly #strokeColor: p5.Color | null
+    readonly #strokeColor: p5.Color | null;
     readonly #strokeWeight: number;
 
     protected constructor(config: ShapeConfig) {
@@ -281,9 +121,9 @@ class Ellipse extends Shape {
 class ColorSelector {
     #hue: number;
     #saturation: number;
-    #backgroundLightnessRange: { min: number; max: number};
-    #shapeLightnessRange: { min: number; max: number};
-    #alphaRange: { min: number; max: number};
+    #backgroundLightnessRange: { min: number; max: number; };
+    #shapeLightnessRange: { min: number; max: number; };
+    #alphaRange: { min: number; max: number; };
 
     public constructor(p5Ctx: p5, backgroundMode: 'light' | 'dark') {
         this.#hue = Math.floor(p5Ctx.random(360));
@@ -311,5 +151,169 @@ class ColorSelector {
         const color = p5Ctx.color(`hsl(${this.#hue.toFixed()}, ${this.#saturation.toFixed()}%, ${lightness.toFixed()}%)`);
         color.setAlpha(Math.floor(p5Ctx.random(this.#alphaRange.min, this.#alphaRange.max)));
         return color;
+    }
+}
+
+enum ShapeType {
+    RECTANGLE = 'RECTANGLE',
+    ELLIPSE = 'ELLIPSE'
+}
+
+enum StyleType {
+    /**
+     * All shapes will be filled only.
+     */
+    FILL_ONLY = 'FILL_ONLY',
+
+    /**
+     * All shapes will be stroked only.
+     */
+    STROKE_ONLY = 'STROKE_ONLY',
+
+    /**
+     * All shapes will be filled and stroked.
+     */
+    BOTH = 'BOTH',
+
+    /**
+     * All shapes will be filled only or have both fill and stroke.
+     */
+    FILL_AND_BOTH = 'FILL_AND_BOTH',
+
+    /**
+     * All shapes will be stroked only or have both fill and stroke.
+     */
+    STROKE_AND_BOTH = 'STROKE_AND_BOTH',
+
+    /**
+     * All shapes will be filled only or stroked only.
+     */
+    FILL_AND_STROKE = 'FILL_AND_STROKE',
+
+    /**
+     * Shapes can be filled only, stroked only, or have both fill and stroke.
+     */
+    MIXED = 'MIXED'
+}
+
+function randomBoolean(): boolean {
+    return Math.random() < 0.5;
+}
+
+function buildShapeConfig(p5Ctx: p5, width: number, height: number, styleType: StyleType, colorSelector: ColorSelector): ShapeConfig {
+    const position = p5Ctx.createVector(
+        p5Ctx.random(p5Ctx.width),
+        p5Ctx.random(p5Ctx.height)
+    );
+
+    const rotation = p5Ctx.random(p5Ctx.TWO_PI);
+
+    // let fillColor: p5.Color | null = p5Ctx.color(
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(50, 200))
+    // );
+
+    let fillColor: p5.Color | null = colorSelector.buildShapeColor(p5Ctx);
+
+    // let strokeColor: p5.Color | null = p5Ctx.color(
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(50, 200))
+    // );
+
+    let strokeColor: p5.Color | null = colorSelector.buildShapeColor(p5Ctx);
+
+    const strokeWeight = p5Ctx.random(0.5, 20);
+
+    if (styleType === StyleType.FILL_ONLY) {
+        strokeColor = null;
+    } else if (styleType === StyleType.STROKE_ONLY) {
+        fillColor = null;
+    } else if (styleType === StyleType.FILL_AND_BOTH) {
+        if (randomBoolean()) {
+            strokeColor = null;
+        }
+    } else if (styleType === StyleType.STROKE_AND_BOTH) {
+        if (randomBoolean()) {
+            fillColor = null;
+        }
+    } else if (styleType === StyleType.FILL_AND_STROKE) {
+        if (randomBoolean()) {
+            fillColor = null;
+        } else {
+            strokeColor = null;
+        }
+    } else if (styleType === StyleType.MIXED) {
+        const rand = p5Ctx.random(1);
+        if (rand < 0.33) {
+            fillColor = null;
+        } else if (rand < 0.66) {
+            strokeColor = null;
+        }
+    }
+
+    return {
+        position,
+        width,
+        height,
+        rotation,
+        fillColor,
+        strokeColor,
+        strokeWeight
+    };
+}
+
+function selectRandomElement<T>(arr: T[], p5Ctx: p5): T | undefined {
+    if (arr.length === 0) {
+        return undefined;
+    }
+
+    const index = Math.floor(p5Ctx.random(arr.length));
+    return arr.at(index) ?? undefined;
+}
+
+// const enum RotationType {
+//     CONSTANT = 'CONSTANT',
+//     RANDOM = 'RANDOM',
+//     ALIGNED = 'ALIGNED'
+// }
+
+export class Genuary01 extends GenuarySketch {
+    #shapes: Shape[] = [];
+    #backgroundColor: p5.Color;
+
+    public constructor(p5Ctx: p5, graphics: p5.Graphics) {
+        super(graphics);
+
+        const numShapes = p5Ctx.random(1, 1_000);
+        const shapeType: ShapeType = selectRandomElement<ShapeType>(Object.values(ShapeType), p5Ctx) ?? ShapeType.RECTANGLE;
+        const styleType: StyleType = selectRandomElement<StyleType>(Object.values(StyleType), p5Ctx) ?? StyleType.FILL_ONLY;
+        const backgroundType: 'light' | 'dark' = selectRandomElement<'light' | 'dark'>(['light', 'dark'], p5Ctx) ?? 'light';
+
+        const shapeWidth = p5Ctx.random(5, 500);
+        const shapeHeight = p5Ctx.random(5, 500);
+
+        const colorSelector = new ColorSelector(p5Ctx, backgroundType);
+        this.#backgroundColor = colorSelector.buildBackgroundColor(p5Ctx);
+
+        for (let i = 0; i < numShapes; i++) {
+            if (shapeType === ShapeType.RECTANGLE) {
+                const config = buildShapeConfig(p5Ctx, shapeWidth, shapeHeight, styleType, colorSelector);
+                this.#shapes.push(new Rectangle(config));
+            } else {
+                const config = buildShapeConfig(p5Ctx, shapeWidth, shapeHeight, styleType, colorSelector);
+                this.#shapes.push(new Ellipse(config));
+            }
+        }
+    }
+
+    public override drawToGraphics(ctx: p5.Graphics): void {
+        ctx.background(this.#backgroundColor);
+        for (const shape of this.#shapes) {
+            shape.draw(ctx);
+        }
     }
 }
