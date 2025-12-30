@@ -25,6 +25,7 @@ import p5 from "p5";
 
 export class Genuary01 extends GenuarySketch {
     #shapes: Shape[] = [];
+    #backgroundColor: p5.Color;
 
     public constructor(p5Ctx: p5, graphics: p5.Graphics) {
         super(graphics);
@@ -32,30 +33,34 @@ export class Genuary01 extends GenuarySketch {
         const numShapes = p5Ctx.random(1, 1_000);
         const shapeType: ShapeType = selectRandomElement<ShapeType>(Object.values(ShapeType), p5Ctx);
         const styleType: StyleType = selectRandomElement<StyleType>(Object.values(StyleType), p5Ctx);
+        const backgroundType: 'light' | 'dark' = selectRandomElement<'light' | 'dark'>(['light', 'dark'], p5Ctx);
 
-        const shapeWidth = p5Ctx.random(20, 500);
-        const shapeHeight = p5Ctx.random(20, 500);
+        const shapeWidth = p5Ctx.random(5, 500);
+        const shapeHeight = p5Ctx.random(5, 500);
+
+        const colorSelector = new ColorSelector(p5Ctx, backgroundType);
+        this.#backgroundColor = colorSelector.buildBackgroundColor(p5Ctx);
 
         for (let i = 0; i < numShapes; i++) {
             if (shapeType === ShapeType.RECTANGLE) {
-                const config = buildShapeConfig(p5Ctx, shapeWidth, shapeHeight, styleType);
+                const config = buildShapeConfig(p5Ctx, shapeWidth, shapeHeight, styleType, colorSelector);
                 this.#shapes.push(new Rectangle(config));
             } else if (shapeType === ShapeType.ELLIPSE) {
-                const config = buildShapeConfig(p5Ctx, shapeWidth, shapeHeight, styleType);
+                const config = buildShapeConfig(p5Ctx, shapeWidth, shapeHeight, styleType, colorSelector);
                 this.#shapes.push(new Ellipse(config));
             }
         }
     }
 
     public override drawToGraphics(ctx: p5.Graphics): void {
-        ctx.background(0);
+        ctx.background(this.#backgroundColor);
         for (const shape of this.#shapes) {
             shape.draw(ctx);
         }
     }
 }
 
-function buildShapeConfig(p5Ctx: p5, width: number, height: number, styleType: StyleType): ShapeConfig {
+function buildShapeConfig(p5Ctx: p5, width: number, height: number, styleType: StyleType, colorSelector: ColorSelector): ShapeConfig {
     const position = p5Ctx.createVector(
         p5Ctx.random(p5Ctx.width),
         p5Ctx.random(p5Ctx.height)
@@ -63,19 +68,23 @@ function buildShapeConfig(p5Ctx: p5, width: number, height: number, styleType: S
 
     const rotation = p5Ctx.random(p5Ctx.TWO_PI);
 
-    let fillColor: p5.Color | null = p5Ctx.color(
-        Math.floor(p5Ctx.random(255)),
-        Math.floor(p5Ctx.random(255)),
-        Math.floor(p5Ctx.random(255)),
-        Math.floor(p5Ctx.random(50, 200))
-    );
+    // let fillColor: p5.Color | null = p5Ctx.color(
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(50, 200))
+    // );
 
-    let strokeColor: p5.Color | null = p5Ctx.color(
-        Math.floor(p5Ctx.random(255)),
-        Math.floor(p5Ctx.random(255)),
-        Math.floor(p5Ctx.random(255)),
-        Math.floor(p5Ctx.random(50, 200))
-    );
+    let fillColor: p5.Color | null = colorSelector.buildShapeColor(p5Ctx);
+
+    // let strokeColor: p5.Color | null = p5Ctx.color(
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(255)),
+    //     Math.floor(p5Ctx.random(50, 200))
+    // );
+
+    let strokeColor: p5.Color | null = colorSelector.buildShapeColor(p5Ctx);
 
     const strokeWeight = p5Ctx.random(0.5, 20);
 
@@ -266,5 +275,41 @@ class Ellipse extends Shape {
         this.applyStyles(ctx);
         ctx.ellipse(0, 0, this.width, this.height);
         ctx.pop();
+    }
+}
+
+class ColorSelector {
+    #hue: number;
+    #saturation: number;
+    #backgroundLightnessRange: { min: number; max: number};
+    #shapeLightnessRange: { min: number; max: number};
+    #alphaRange: { min: number; max: number};
+
+    public constructor(p5Ctx: p5, backgroundMode: 'light' | 'dark') {
+        this.#hue = Math.floor(p5Ctx.random(360));
+        this.#saturation = Math.floor(p5Ctx.random(15, 100));
+        this.#alphaRange = { min: 50, max: 225 };
+
+        if (backgroundMode === 'light') {
+            this.#backgroundLightnessRange = { min: 30, max: 90 };
+            this.#shapeLightnessRange = { min: 3, max: 35 };
+        } else {
+            this.#backgroundLightnessRange = { min: 3, max: 35 };
+            this.#shapeLightnessRange = { min: 30, max: 90 };
+        }
+    }
+
+    public buildBackgroundColor(p5Ctx: p5): p5.Color {
+        const lightness = Math.floor(p5Ctx.random(this.#backgroundLightnessRange.min, this.#backgroundLightnessRange.max));
+        const color = p5Ctx.color(`hsl(${this.#hue.toFixed()}, ${this.#saturation.toFixed()}%, ${lightness.toFixed()}%)`);
+        color.setAlpha(Math.floor(p5Ctx.random(this.#alphaRange.min, this.#alphaRange.max)));
+        return color;
+    }
+
+    public buildShapeColor(p5Ctx: p5): p5.Color {
+        const lightness = Math.floor(p5Ctx.random(this.#shapeLightnessRange.min, this.#shapeLightnessRange.max));
+        const color = p5Ctx.color(`hsl(${this.#hue.toFixed()}, ${this.#saturation.toFixed()}%, ${lightness.toFixed()}%)`);
+        color.setAlpha(Math.floor(p5Ctx.random(this.#alphaRange.min, this.#alphaRange.max)));
+        return color;
     }
 }
