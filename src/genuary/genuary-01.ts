@@ -23,6 +23,63 @@
 import { GenuarySketch } from '../genuary-sketch';
 import p5 from 'p5';
 
+enum ShapeType {
+    RECTANGLE = 'RECTANGLE',
+    ELLIPSE = 'ELLIPSE',
+    SQUARE = 'SQUARE',
+    CIRCLE = 'CIRCLE',
+    POLYGON = 'POLYGON'
+}
+
+enum StyleType {
+    /**
+     * All shapes will be filled only.
+     */
+    FILL_ONLY = 'FILL_ONLY',
+
+    /**
+     * All shapes will be stroked only.
+     */
+    STROKE_ONLY = 'STROKE_ONLY',
+
+    /**
+     * All shapes will be filled and stroked.
+     */
+    BOTH = 'BOTH',
+
+    /**
+     * All shapes will be filled only or have both fill and stroke.
+     */
+    FILL_AND_BOTH = 'FILL_AND_BOTH',
+
+    /**
+     * All shapes will be stroked only or have both fill and stroke.
+     */
+    STROKE_AND_BOTH = 'STROKE_AND_BOTH',
+
+    /**
+     * All shapes will be filled only or stroked only.
+     */
+    FILL_AND_STROKE = 'FILL_AND_STROKE',
+
+    /**
+     * Shapes can be filled only, stroked only, or have both fill and stroke.
+     */
+    MIXED = 'MIXED'
+}
+
+// const enum RotationType {
+//     CONSTANT = 'CONSTANT',
+//     RANDOM = 'RANDOM',
+//     ALIGNED = 'ALIGNED'
+// }
+
+// const enum PositionType {
+//     RANDOM = 'RANDOM',
+//     GRID = 'GRID',
+//     RANDOM_GRID = 'RANDOM_GRID'
+// }
+
 interface ShapeConfig {
     position: p5.Vector;
     width: number;
@@ -41,6 +98,19 @@ interface RadialShapeConfig extends ShapeConfig {
 
 interface PolygonShapeConfig extends RadialShapeConfig {
     readonly sides: number;
+}
+
+function randomBoolean(): boolean {
+    return Math.random() < 0.5;
+}
+
+function selectRandomElement<T>(arr: T[], p5Ctx: p5): T | undefined {
+    if (arr.length === 0) {
+        return undefined;
+    }
+
+    const index = Math.floor(p5Ctx.random(arr.length));
+    return arr.at(index) ?? undefined;
 }
 
 function buildShapeConfig(p5Ctx: p5, width: number, height: number, styleType: StyleType, colorSelector: ColorSelector): ShapeConfig {
@@ -286,76 +356,6 @@ class ColorSelector {
     }
 }
 
-function randomBoolean(): boolean {
-    return Math.random() < 0.5;
-}
-
-function selectRandomElement<T>(arr: T[], p5Ctx: p5): T | undefined {
-    if (arr.length === 0) {
-        return undefined;
-    }
-
-    const index = Math.floor(p5Ctx.random(arr.length));
-    return arr.at(index) ?? undefined;
-}
-
-enum ShapeType {
-    RECTANGLE = 'RECTANGLE',
-    ELLIPSE = 'ELLIPSE',
-    SQUARE = 'SQUARE',
-    CIRCLE = 'CIRCLE',
-    POLYGON = 'POLYGON'
-}
-
-enum StyleType {
-    /**
-     * All shapes will be filled only.
-     */
-    FILL_ONLY = 'FILL_ONLY',
-
-    /**
-     * All shapes will be stroked only.
-     */
-    STROKE_ONLY = 'STROKE_ONLY',
-
-    /**
-     * All shapes will be filled and stroked.
-     */
-    BOTH = 'BOTH',
-
-    /**
-     * All shapes will be filled only or have both fill and stroke.
-     */
-    FILL_AND_BOTH = 'FILL_AND_BOTH',
-
-    /**
-     * All shapes will be stroked only or have both fill and stroke.
-     */
-    STROKE_AND_BOTH = 'STROKE_AND_BOTH',
-
-    /**
-     * All shapes will be filled only or stroked only.
-     */
-    FILL_AND_STROKE = 'FILL_AND_STROKE',
-
-    /**
-     * Shapes can be filled only, stroked only, or have both fill and stroke.
-     */
-    MIXED = 'MIXED'
-}
-
-// const enum RotationType {
-//     CONSTANT = 'CONSTANT',
-//     RANDOM = 'RANDOM',
-//     ALIGNED = 'ALIGNED'
-// }
-
-// const enum PositionType {
-//     RANDOM = 'RANDOM',
-//     GRID = 'GRID',
-//     RANDOM_GRID = 'RANDOM_GRID'
-// }
-
 export class Genuary01 extends GenuarySketch {
     #shapes: Shape[] = [];
     #backgroundColor: p5.Color;
@@ -375,7 +375,7 @@ export class Genuary01 extends GenuarySketch {
 
     #init(p5Ctx: p5): void {
         const numShapes = p5Ctx.random(1, 1_000);
-        let shapeType: ShapeType = selectRandomElement<ShapeType>(Object.values(ShapeType), p5Ctx) ?? ShapeType.RECTANGLE;
+        const shapeType: ShapeType = selectRandomElement<ShapeType>(Object.values(ShapeType), p5Ctx) ?? ShapeType.RECTANGLE;
         const styleType: StyleType = selectRandomElement<StyleType>(Object.values(StyleType), p5Ctx) ?? StyleType.FILL_ONLY;
         const backgroundType: 'light' | 'dark' = selectRandomElement<'light' | 'dark'>(['light', 'dark'], p5Ctx) ?? 'light';
 
